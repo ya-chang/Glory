@@ -101,8 +101,8 @@
   .emblem-wrap {
     position: relative;
     width: 100%;
+    max-width: 620px;
     margin-bottom: 6px;
-    overflow: visible;
   }
   .emblem-glow {
     position: absolute;
@@ -125,8 +125,6 @@
     filter: drop-shadow(0 0 30px rgba(180, 60, 30, 0.3)) drop-shadow(0 8px 20px rgba(0,0,0,0.6));
     user-select: none;
     -webkit-user-drag: none;
-    transform: scale(1.68);
-    transform-origin: center top;
   }
 
   /* ===== Divider ===== */
@@ -347,7 +345,7 @@
   }
 
   @media (max-height: 680px) {
-    .emblem-wrap { max-width: 80%; }
+    .emblem-wrap { max-width: 260px; }
     .divider { margin: 12px 0 16px; }
     .login-card { padding: 18px 16px 16px; }
     .form { gap: 10px; }
