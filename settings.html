@@ -178,22 +178,47 @@
       input.value = '';
       return;
     }
-    // 验证文件大小（2MB）
-    if (file.size > 2 * 1024 * 1024) {
-      alert('图片文件过大，请选择 2MB 以内的图片');
+    // 验证文件大小（10MB，压缩后再上传）
+    if (file.size > 10 * 1024 * 1024) {
+      alert('图片文件过大，请选择 10MB 以内的图片');
       input.value = '';
       return;
     }
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      pendingAvatar = e.target.result;
-      document.querySelector('#avatarPreview img').src = pendingAvatar;
+    // 压缩图片后再转 base64
+    compressImage(file, 200, 0.8).then(dataUrl => {
+      pendingAvatar = dataUrl;
+      document.querySelector('#avatarPreview img').src = dataUrl;
       document.getElementById('avatarPreview').style.display = 'block';
-    };
-    reader.onerror = function() {
-      alert('图片读取失败，请重试');
-    };
-    reader.readAsDataURL(file);
+    }).catch(() => {
+      alert('图片处理失败，请重试');
+    });
+  }
+
+  // 压缩图片到指定最大宽高，返回 base64
+  function compressImage(file, maxSize, quality) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > maxSize || h > maxSize) {
+            if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+            else { w = Math.round(w * maxSize / h); h = maxSize; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   }
 
   async function saveProfile() {
@@ -229,9 +254,9 @@
         body: JSON.stringify(data)
       });
       if (res.status === 401) { window.location.href = 'index.html'; return; }
+      const result = await res.json();
       if (!res.ok) {
-        const err = await res.json();
-        alert('保存失败：' + (err.error || '未知错误'));
+        alert('保存失败：' + (result.error || `服务器返回 ${res.status}`));
         return;
       }
       // 更新本地缓存
@@ -240,6 +265,7 @@
       localStorage.setItem('glory_user', JSON.stringify(user));
       showToast('个人资料已保存 ✅');
     } catch (e) {
+      console.error('saveProfile error:', e);
       alert('网络错误，请稍后重试');
     }
   }
@@ -314,6 +340,24 @@
     transition: all 0.3s ease; pointer-events: none;
   }
   .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .settings-card { padding: 18px 14px; }
+    .settings-card h2 { font-size: 15px; margin-bottom: 14px; }
+    .form-group label { font-size: 13px; }
+    .form-group input, .form-group textarea, .form-group select {
+      font-size: 15px; padding: 12px; width: 100%;
+    }
+    .form-group textarea { min-height: 80px; }
+    .file-upload label { padding: 10px 20px; font-size: 13px; }
+    .btn-row .btn { width: 100%; padding: 12px; font-size: 14px; }
+    .file-preview img { max-width: 120px; max-height: 120px; }
+  }
+  @media (max-width: 480px) {
+    .settings-card { padding: 14px 12px; }
+    .file-preview { margin: 8px 0; }
+  }
 </style>
 </body>
 </html>

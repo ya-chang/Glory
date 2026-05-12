@@ -500,9 +500,28 @@
   }
 
   @media (max-width: 768px) {
-    .post-detail-card { padding: 20px 16px; }
-    .post-detail-title { font-size: 18px; }
-    .reply-child { padding-left: 8px; }
+    .post-detail-card { padding: 16px 12px; }
+    .post-detail-title { font-size: 17px; line-height: 1.4; }
+    .post-author-avatar { width: 36px; height: 36px; font-size: 15px; }
+    .post-time-row { flex-direction: column; gap: 4px; }
+    .post-detail-actions { flex-wrap: wrap; gap: 6px; }
+    .post-action-btn { padding: 6px 10px; font-size: 12px; }
+    .reply-item { padding: 12px 0; }
+    .reply-avatar { width: 30px; height: 30px; font-size: 12px; }
+    .reply-child { padding-left: 6px; }
+    .reply-child-avatar { width: 24px; height: 24px; font-size: 10px; }
+    .reply-actions { gap: 8px; }
+    .reply-action { padding: 4px 8px; font-size: 12px; }
+    .comment-form textarea { min-height: 80px; font-size: 14px; }
+    .breadcrumb { font-size: 12px; }
+  }
+  @media (max-width: 480px) {
+    .post-detail-card { padding: 14px 10px; }
+    .post-detail-title { font-size: 15px; }
+    .post-detail-content { font-size: 14px; }
+    .reply-header { flex-wrap: wrap; gap: 4px; }
+    .reply-text { font-size: 13px; }
+    .reply-children { margin-left: 0; }
   }
 </style>
 </body>

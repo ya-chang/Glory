@@ -68,7 +68,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '10mb' }));
 
 // ============ Rate Limiting ============
 const rateLimitStore = {};
@@ -841,15 +841,21 @@ app.put('/api/profile', requireAuth, async (req, res) => {
     const updates = {};
     if (username !== undefined) updates.username = sanitizeUsername(username);
     if (avatar !== undefined) {
-      // 只允许 base64 图片或合法 URL
-      if (avatar && !avatar.startsWith('data:image/') && !avatar.startsWith('https://')) {
-        return res.status(400).json({ error: '头像格式不正确' });
+      // 只允许 base64 图片或合法 URL，或空字符串（清除头像）
+      if (avatar && typeof avatar === 'string') {
+        const isDataImage = avatar.startsWith('data:image/');
+        const isHttpsUrl = avatar.startsWith('https://');
+        const isEmpty = avatar === '';
+        if (!isDataImage && !isHttpsUrl && !isEmpty) {
+          console.error('[Profile] Invalid avatar format:', avatar.substring(0, 50));
+          return res.status(400).json({ error: '头像格式不正确，仅支持图片文件' });
+        }
+        // base64 图片限制 5MB（base64 编码后约 6.8MB）
+        if (isDataImage && avatar.length > 7 * 1024 * 1024) {
+          return res.status(400).json({ error: '头像图片过大，请压缩后重试（最大 5MB）' });
+        }
       }
-      // base64 图片限制 2MB
-      if (avatar && avatar.startsWith('data:image/') && avatar.length > 2 * 1024 * 1024 * 1.37) {
-        return res.status(400).json({ error: '头像图片过大，请压缩后重试（最大 2MB）' });
-      }
-      updates.avatar = avatar;
+      updates.avatar = avatar || '';
     }
     if (bio !== undefined) updates.bio = sanitizeText(bio, 200);
     if (favPlayer !== undefined) updates.favPlayer = sanitizeText(favPlayer, 50);

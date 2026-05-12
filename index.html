@@ -332,19 +332,24 @@
   /* ===== Responsive ===== */
   @media (max-width: 520px) {
     .scene { padding: 16px; }
-    .emblem-wrap { max-width: 340px; }
-    .divider { width: 200px; margin: 18px 0 22px; }
-    .login-card { padding: 24px 20px 22px; }
-    .btn-login { height: 46px; font-size: 14px; letter-spacing: 8px; }
-    .links { gap: 18px; }
+    .emblem-wrap { max-width: 280px; }
+    .divider { width: 180px; margin: 16px 0 20px; }
+    .login-card { padding: 20px 18px 20px; }
+    .field input { height: 48px; font-size: 15px; padding: 0 14px; }
+    .field label { font-size: 11px; letter-spacing: 2px; }
+    .btn-login { height: 48px; font-size: 14px; letter-spacing: 8px; }
+    .links { gap: 16px; }
+    .links a { font-size: 12px; padding: 6px 0; }
+    .opts { flex-wrap: wrap; gap: 8px; }
+    .toast { font-size: 12px; padding: 10px 20px; top: 16px; }
   }
 
   @media (max-height: 680px) {
-    .emblem-wrap { max-width: 320px; }
-    .divider { margin: 14px 0 18px; }
-    .login-card { padding: 20px 20px 18px; }
-    .form { gap: 12px; }
-    .bottom { margin-top: 18px; }
+    .emblem-wrap { max-width: 260px; }
+    .divider { margin: 12px 0 16px; }
+    .login-card { padding: 18px 16px 16px; }
+    .form { gap: 10px; }
+    .bottom { margin-top: 14px; }
   }
 
   @media (min-width: 1200px) {
@@ -418,7 +423,7 @@
 
     <div class="bottom">
       <div class="links">
-        <a href="community.html">官网首页</a>
+        <a href="community.html" style="color:rgba(200,160,80,0.55);">社区首页</a>
         <a href="register.html">账号注册</a>
         <a>客服中心</a>
       </div>

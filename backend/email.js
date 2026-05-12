@@ -9,9 +9,23 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 const FROM_NAME = process.env.FROM_NAME || '荣耀社区';
 
+// 启动时检查邮件配置
+if (!RESEND_API_KEY) {
+  console.warn('[Email] ⚠️ RESEND_API_KEY 未设置，邮件功能不可用');
+} else {
+  console.log('[Email] 配置: FROM_EMAIL=' + FROM_EMAIL + ', FROM_NAME=' + FROM_NAME);
+}
+
 // 发送单封邮件
 async function sendEmail(toAddress, subject, htmlBody) {
   try {
+    if (!RESEND_API_KEY) {
+      console.error('[Email] 发送失败: RESEND_API_KEY 未配置');
+      return { success: false, error: '邮件服务未配置' };
+    }
+
+    console.log('[Email] 正在发送到:', toAddress, '主题:', subject);
+
     const resp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -29,14 +43,19 @@ async function sendEmail(toAddress, subject, htmlBody) {
     const data = await resp.json();
 
     if (!resp.ok) {
-      console.error('[Email] Send failed:', data);
+      console.error('[Email] 发送失败:', resp.status, JSON.stringify(data));
+      // Resend 免费版限制：onboarding@resend.dev 只能发给注册邮箱
+      if (resp.status === 403 || (data.message && data.message.includes('testing'))) {
+        console.error('[Email] 💡 提示: 使用 onboarding@resend.dev 时，只能发送到注册 Resend 的邮箱。请配置自定义域名。');
+        return { success: false, error: '邮件服务受限，请联系管理员配置发件域名' };
+      }
       return { success: false, error: data.message || '发送失败' };
     }
 
-    console.log('[Email] Sent to', toAddress, 'Id:', data.id);
+    console.log('[Email] ✅ 发送成功, Id:', data.id);
     return { success: true, messageId: data.id };
   } catch (err) {
-    console.error('[Email] Error:', err.message);
+    console.error('[Email] 异常:', err.message);
     return { success: false, error: err.message };
   }
 }
