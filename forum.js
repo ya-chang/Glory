@@ -61,6 +61,14 @@ async function deleteReply(id) {
 
 /* ===== 点赞 API ===== */
 
+function isLiked(type, id) {
+  try {
+    var data = localStorage.getItem('glory_forum_likes');
+    var likes = data ? JSON.parse(data) : {};
+    return !!likes[type + ':' + id];
+  } catch(e) { return false; }
+}
+
 async function toggleLike(type, id) {
   try {
     var endpoint = type === 'post' ? '/api/forum/posts/' + id + '/like' : '/api/forum/replies/' + id + '/like';
