@@ -11,8 +11,6 @@ const DB_FILE = 'glory-db.json';
 
 let client = null;
 let db = null;
-let dirty = false;
-let saveTimer = null;
 
 // 初始化 OSS 客户端
 function getClient() {
@@ -67,23 +65,32 @@ async function loadDb() {
   return db;
 }
 
-// 保存数据库到 OSS（防抖：500ms 内多次写入只执行一次）
-async function saveDb() {
-  dirty = true;
-  if (saveTimer) return;
-  saveTimer = setTimeout(async () => {
-    saveTimer = null;
-    if (!dirty) return;
-    dirty = false;
-    try {
-      await getClient().put(DB_FILE, Buffer.from(JSON.stringify(db, null, 2)), {
-        headers: { 'Content-Type': 'application/json' }
-      });
-      console.log('[DB] Saved to OSS');
-    } catch (err) {
-      console.error('[DB] Save error:', err.message);
+// 保存数据库到 OSS（写入队列：串行执行，不丢数据）
+var writeQueue = [];
+var writing = false;
+
+async function enqueueSave() {
+  if (writing) return;
+  writing = true;
+  try {
+    await getClient().put(DB_FILE, Buffer.from(JSON.stringify(db, null, 2)), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    console.log('[DB] Saved to OSS');
+  } catch (err) {
+    console.error('[DB] Save error:', err.message);
+  } finally {
+    writing = false;
+    if (writeQueue.length > 0) {
+      writeQueue.shift();
+      enqueueSave();
     }
-  }, 500);
+  }
+}
+
+async function saveDb() {
+  writeQueue.push(true);
+  enqueueSave();
 }
 
 // ============ 用户操作 ============
