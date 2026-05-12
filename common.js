@@ -31,23 +31,18 @@ function authHeaders() {
 
 function handleAuthError(res) {
   if (res.status === 401) {
-    // 不自动跳转，返回 true 让调用方处理
+    localStorage.removeItem('glory_token');
+    localStorage.removeItem('glory_user');
+    window.location.href = 'index.html';
     return true;
   }
   return false;
 }
 
-// 主动退出登录
-function doLogout() {
-  localStorage.removeItem('glory_token');
-  localStorage.removeItem('glory_user');
-  window.location.href = 'index.html';
-}
-
 /* ===== API 请求（带重试） ===== */
 async function apiGet(path) {
   const res = await fetchWithRetry(API_BASE + path, { headers: authHeaders() });
-  if (handleAuthError(res)) throw new Error('AUTH_EXPIRED');
+  if (handleAuthError(res)) return null;
   if (!res.ok) throw new Error((await res.json()).error || '请求失败');
   return res.json();
 }
@@ -56,7 +51,7 @@ async function apiPost(path, data) {
   const res = await fetchWithRetry(API_BASE + path, {
     method: 'POST', headers: authHeaders(), body: JSON.stringify(data)
   });
-  if (handleAuthError(res)) throw new Error('AUTH_EXPIRED');
+  if (handleAuthError(res)) return null;
   if (!res.ok) throw new Error((await res.json()).error || '请求失败');
   return res.json();
 }
@@ -65,7 +60,7 @@ async function apiPut(path, data) {
   const res = await fetchWithRetry(API_BASE + path, {
     method: 'PUT', headers: authHeaders(), body: JSON.stringify(data)
   });
-  if (handleAuthError(res)) throw new Error('AUTH_EXPIRED');
+  if (handleAuthError(res)) return null;
   if (!res.ok) throw new Error((await res.json()).error || '请求失败');
   return res.json();
 }
@@ -74,7 +69,7 @@ async function apiDelete(path) {
   const res = await fetchWithRetry(API_BASE + path, {
     method: 'DELETE', headers: authHeaders()
   });
-  if (handleAuthError(res)) throw new Error('AUTH_EXPIRED');
+  if (handleAuthError(res)) return null;
   if (!res.ok) throw new Error((await res.json()).error || '请求失败');
   return res.json();
 }

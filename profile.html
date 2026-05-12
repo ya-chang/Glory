@@ -32,7 +32,7 @@
       <a href="search.html" class="nav-text-btn">搜索</a>
       <a href="notifications.html" class="nav-text-btn">通知</a>
       <a href="profile.html" class="nav-text-btn">我的</a>
-      <a href="javascript:doLogout()" class="btn-logout">退出</a>
+      <a href="index.html" class="btn-logout">退出</a>
     </div>
   </div>
 </header>
@@ -170,7 +170,8 @@
 <script>
   // ===== 检查登录 =====
   if (!getToken()) {
-    document.querySelector('.container').innerHTML = '<div style="text-align:center;padding:80px 20px;"><div style="font-size:48px;margin-bottom:16px;">🔒</div><h2 style="margin-bottom:12px;">请先登录</h2><p style="color:var(--text-3);margin-bottom:24px;">登录后才能查看个人主页</p><a href="index.html" class="btn btn-primary">前往登录</a></div>';
+    alert('请先登录');
+    window.location.href = 'index.html';
   }
 
   // ===== 签到系统（本地） =====
@@ -377,11 +378,6 @@
       }
     } catch (e) {
       console.error('renderProfile error:', e);
-      if (e.message === 'AUTH_EXPIRED') {
-        localStorage.removeItem('glory_token');
-        localStorage.removeItem('glory_user');
-        document.querySelector('.container').innerHTML = '<div style="text-align:center;padding:80px 20px;"><div style="font-size:48px;margin-bottom:16px;">⏰</div><h2 style="margin-bottom:12px;">登录已过期</h2><p style="color:var(--text-3);margin-bottom:24px;">请重新登录以查看个人主页</p><a href="index.html" class="btn btn-primary">重新登录</a></div>';
-      }
     }
   }
 
