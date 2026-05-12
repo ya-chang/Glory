@@ -41,75 +41,7 @@
 <script src="layout.js"></script>
 <script src="players.js?v=2"></script>
 <script src="teams.js?v=2"></script>
-<script>
-  // Build name→id lookup from players data
-  const playerIdMap = {};
-  PLAYERS.forEach(p => { playerIdMap[p.name] = p.id; });
-
-  let currentSeason = 9;
-
-  function renderSeasonTabs() {
-    const container = document.getElementById('seasonTabs');
-    for (let s = 1; s <= 10; s++) {
-      const tab = document.createElement('span');
-      tab.className = 'season-tab' + (s === currentSeason ? ' active' : '');
-      tab.textContent = 'S' + s;
-      tab.dataset.season = s;
-      tab.onclick = () => {
-        document.querySelectorAll('.season-tab').forEach(el => el.classList.remove('active'));
-        tab.classList.add('active');
-        currentSeason = s;
-        renderTeams();
-      };
-      container.appendChild(tab);
-    }
-  }
-
-  function renderTeams() {
-    const container = document.getElementById('teamsContainer');
-    container.innerHTML = '';
-
-    TEAM_ORDER.forEach(teamId => {
-      const team = TEAM_ROSTERS[teamId];
-      if (!team) return;
-
-      const roster = team.seasons[currentSeason] || [];
-      const card = document.createElement('div');
-      card.className = 'team-card';
-
-      let rosterHtml = '';
-      if (roster.length === 0) {
-        rosterHtml = '<div class="team-empty">该赛季暂无阵容数据</div>';
-      } else {
-        rosterHtml = '<div class="team-roster">' + roster.map((p, i) => {
-          const noteHtml = p.note ? '<span class="player-note">' + p.note + '</span>' : '';
-          const pid = playerIdMap[p.name];
-          const nameHtml = pid
-            ? '<a class="roster-name roster-link" href="player-detail.html?id=' + pid + '">' + p.name + '</a>'
-            : '<span class="roster-name">' + p.name + '</span>';
-          return '<div class="roster-row">' +
-            '<span class="roster-num">' + (i + 1) + '</span>' +
-            nameHtml +
-            '<span class="roster-role">' + p.role + '</span>' +
-            noteHtml +
-            '</div>';
-        }).join('') + '</div>';
-      }
-
-      card.innerHTML =
-        '<div class="team-header">' +
-          '<h2>' + team.fullName + '</h2>' +
-          '<span class="team-count">' + roster.length + ' 人</span>' +
-        '</div>' +
-        rosterHtml;
-
-      container.appendChild(card);
-    });
-  }
-
-  renderSeasonTabs();
-  renderTeams();
-</script>
+<script src="page-teams.js"></script>
 
 </body>
 </html>

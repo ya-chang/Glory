@@ -56,67 +56,6 @@
 <script src="common.js?v=2"></script>
 <script src="layout.js"></script>
 <script src="players.js?v=2"></script>
-<script>
-  let currentTeam = 'all';
-
-  function renderTabs() {
-    const container = document.getElementById('teamTabs');
-    TEAMS.forEach(t => {
-      const tab = document.createElement('span');
-      tab.className = 'team-tab' + (t.id === 'all' ? ' active' : '');
-      tab.textContent = t.name;
-      tab.dataset.id = t.id;
-      tab.onclick = () => {
-        document.querySelectorAll('.team-tab').forEach(el => el.classList.remove('active'));
-        tab.classList.add('active');
-        currentTeam = t.id;
-        filterPlayers();
-      };
-      container.appendChild(tab);
-    });
-  }
-
-  function renderCards(list) {
-    const grid = document.getElementById('playersGrid');
-    const empty = document.getElementById('emptyState');
-    grid.innerHTML = '';
-    if (list.length === 0) { empty.style.display = 'block'; return; }
-    empty.style.display = 'none';
-    list.forEach(p => {
-      const card = document.createElement('a');
-      card.className = 'player-card';
-      card.href = `player-detail.html?id=${p.id}`;
-      const sc = p.status === '现役' ? 'tag-active' : (p.status === '退役' ? 'tag-retired' : 'tag-status');
-      card.innerHTML = `
-        <div class="player-card-top"></div>
-        <div class="player-card-body">
-          <div class="player-avatar">${p.avatar}</div>
-          <div class="player-info">
-            <h3>${p.name}</h3>
-            <div class="game-id">${p.gameId.split('/')[0].trim()}</div>
-            <div class="meta">
-              <span class="tag tag-class">${p.class.split('/')[0].split('（')[0]}</span>
-              <span class="tag tag-team">${p.teamShort}</span>
-              <span class="tag ${sc}">${p.status}</span>
-            </div>
-          </div>
-        </div>`;
-      grid.appendChild(card);
-    });
-  }
-
-  function filterPlayers() {
-    const search = document.getElementById('searchInput').value.trim().toLowerCase();
-    const status = document.getElementById('statusFilter').value;
-    let list = PLAYERS;
-    if (currentTeam !== 'all') list = list.filter(p => p.team.includes(currentTeam) || p.teamShort === currentTeam);
-    if (status !== 'all') list = list.filter(p => p.status === status);
-    if (search) list = list.filter(p => p.name.toLowerCase().includes(search) || p.gameId.toLowerCase().includes(search) || p.class.toLowerCase().includes(search) || p.team.toLowerCase().includes(search) || p.honors.some(h => h.toLowerCase().includes(search)));
-    renderCards(list);
-  }
-
-  renderTabs();
-  filterPlayers();
-</script>
+<script src="page-players.js"></script>
 </body>
 </html>
