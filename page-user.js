@@ -75,7 +75,10 @@
   async function loadUserPosts(email) {
     try {
       var result = await getPostsByAuthor(email);
-      var userPosts = result.items || [];
+      // 客户端二次过滤，确保只显示目标用户的帖子
+      var userPosts = (result.items || []).filter(function(p) {
+        return p.authorId && email && p.authorId.toLowerCase() === email.toLowerCase();
+      });
       var container = document.getElementById('userPosts');
 
       if (userPosts.length === 0) {

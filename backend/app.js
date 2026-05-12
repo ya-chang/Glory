@@ -142,7 +142,7 @@ async function ensureAdmin() {
     console.error('[Admin] Init error:', err.message);
   }
 }
-ensureAdmin();
+const adminReady = ensureAdmin();
 
 // ============ Auth 中间件 ============
 
@@ -183,6 +183,10 @@ async function requireAdmin(req, res, next) {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
+    // 优先用 JWT 中的 role 判断（避免 ensureAdmin 未完成的竞态条件）
+    if (decoded.role === 'admin') {
+      return next();
+    }
     const user = await db.getUserByEmail(decoded.email);
     if (!user || user.role !== 'admin') {
       return res.status(403).json({ error: '需要管理员权限' });
@@ -501,8 +505,9 @@ app.get('/api/forum/posts', async (req, res) => {
       return res.json(result);
     }
     // 按作者筛选（忽略大小写）
-    if (author) {
-      const authorLower = author.toLowerCase();
+    const authorStr = typeof author === 'string' ? author.trim() : '';
+    if (authorStr) {
+      const authorLower = authorStr.toLowerCase();
       const allPosts = await db.getForumPosts();
       let posts = allPosts.filter(p => p.authorId && p.authorId.toLowerCase() === authorLower);
       posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -614,9 +619,14 @@ app.delete('/api/forum/posts/:id', requireAuth, async (req, res) => {
     const userEmail = req.user.email.toLowerCase();
     const isOwner = post.authorId && post.authorId.toLowerCase() === userEmail;
     if (!isOwner) {
-      const user = await db.getUserByEmail(userEmail);
-      if (!user || user.role !== 'admin') {
-        return res.status(403).json({ error: '只能删除自己的帖子' });
+      // 优先用 JWT 中的 role 判断（避免 ensureAdmin 未完成的竞态条件）
+      if (req.user.role === 'admin') {
+        // JWT 确认是管理员，直接放行
+      } else {
+        const user = await db.getUserByEmail(userEmail);
+        if (!user || user.role !== 'admin') {
+          return res.status(403).json({ error: '只能删除自己的帖子' });
+        }
       }
     }
     await db.deleteForumPost(req.params.id);
@@ -702,9 +712,13 @@ app.delete('/api/forum/replies/:id', requireAuth, async (req, res) => {
     const userEmail = req.user.email.toLowerCase();
     const isOwner = reply.authorId && reply.authorId.toLowerCase() === userEmail;
     if (!isOwner) {
-      const user = await db.getUserByEmail(userEmail);
-      if (!user || user.role !== 'admin') {
-        return res.status(403).json({ error: '只能删除自己的回复' });
+      if (req.user.role === 'admin') {
+        // JWT 确认是管理员，直接放行
+      } else {
+        const user = await db.getUserByEmail(userEmail);
+        if (!user || user.role !== 'admin') {
+          return res.status(403).json({ error: '只能删除自己的回复' });
+        }
       }
     }
     await db.deleteForumReply(req.params.id);

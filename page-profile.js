@@ -197,7 +197,10 @@
       var user = getUser();
       if (!user) return;
       var result = await getPostsByAuthor(user.email);
-      var myPosts = result.items || [];
+      // 客户端二次过滤，确保只显示当前用户的帖子
+      var myPosts = (result.items || []).filter(function(p) {
+        return p.authorId && user.email && p.authorId.toLowerCase() === user.email.toLowerCase();
+      });
       var container = document.getElementById('myPosts');
 
       if (myPosts.length === 0) {
