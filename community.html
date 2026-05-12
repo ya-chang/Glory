@@ -90,65 +90,6 @@
 <script src="layout.js"></script>
 <script src="players.js?v=2"></script>
 <script src="forum.js?v=2"></script>
-<script>
-  // 热门选手（静态数据）
-  const hotIds = ['yexiu','huangshaotian','zhouzekai','wangjiexi','hanwenqing','yuwenzhou'];
-  const hotPlayers = PLAYERS.filter(p => hotIds.includes(p.id));
-  const grid = document.getElementById('hotPlayers');
-  hotPlayers.forEach(p => {
-    const card = document.createElement('a');
-    card.className = 'player-card';
-    card.href = `player-detail.html?id=${p.id}`;
-    card.innerHTML = `
-      <div class="player-card-top"></div>
-      <div class="player-card-body">
-        <div class="player-avatar">${p.avatar}</div>
-        <div class="player-info">
-          <h3>${p.name}</h3>
-          <div class="game-id">${p.gameId.split('/')[0].trim()}</div>
-          <div class="meta">
-            <span class="tag tag-class">${p.class.split('/')[0].split('（')[0]}</span>
-            <span class="tag tag-team">${p.team.split('→').pop()}</span>
-          </div>
-        </div>
-      </div>`;
-    grid.appendChild(card);
-  });
-
-  // 社区数据（API）
-  async function loadCommunityData() {
-    try {
-      const [stats, hotPosts] = await Promise.all([
-        apiGet('/api/community/stats'),
-        apiGet('/api/community/hot-posts')
-      ]);
-      if (stats) {
-        document.getElementById('statPosts').textContent = stats.postCount || 0;
-        document.getElementById('statUsers').textContent = stats.userCount || 0;
-        document.getElementById('statOCs').textContent = stats.ocCount || 0;
-      }
-      if (hotPosts && hotPosts.length > 0) {
-        const container = document.getElementById('hotPosts');
-        hotPosts.forEach(p => {
-          const cat = getCategoryById(p.category);
-          const div = document.createElement('a');
-          div.href = `post-detail.html?id=${p.id}`;
-          div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg-subtle,#f8f9fa);border:1px solid var(--border,#e8e8e8);border-radius:6px;text-decoration:none;color:inherit;';
-          div.innerHTML = `
-            <span style="font-size:20px;">${cat ? cat.icon : '💬'}</span>
-            <div style="flex:1;min-width:0;">
-              <div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeForumHtml(p.title)}</div>
-              <div style="font-size:12px;color:#888;margin-top:2px;">${p.authorName} · ${forumTimeAgo(p.createdAt)} · ❤️ ${p.likeCount || 0} · 💬 ${p.replyCount || 0}</div>
-            </div>`;
-          container.appendChild(div);
-        });
-      }
-    } catch (e) {
-      console.error('loadCommunityData error:', e);
-      showErrorState('hotPosts', '加载失败');
-    }
-  }
-  loadCommunityData();
-</script>
+<script src="page-community.js"></script>
 </body>
 </html>

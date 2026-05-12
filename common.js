@@ -259,6 +259,72 @@ function userLinkHtml(authorId, authorName) {
   return safeName;
 }
 
+/* ===== 公共渲染函数（重构提取） ===== */
+
+function renderPostCard(post, options) {
+  options = options || {};
+  var compact = options.compact;
+  var showExcerpt = options.showExcerpt !== false;
+  var cat = getCategoryById(post.category);
+  var catName = cat ? cat.name : '未知';
+  var catIcon = cat ? cat.icon : '📁';
+  var isHot = (post.likeCount + post.replyCount) > 20;
+  var excerpt = post.content.length > 120 ? post.content.substring(0, 120) + '...' : post.content;
+  
+  var item = document.createElement('a');
+  item.className = 'post-item' + (post.isPinned ? ' pinned' : '') + (post.isLocked ? ' locked' : '') + (compact ? ' compact' : '');
+  item.href = 'post-detail.html?id=' + post.id;
+  
+  var html = '<div class="post-avatar' + (isHot ? ' hot' : '') + '">' + post.authorName[0] + '</div>';
+  html += '<div class="post-body">';
+  html += '<div class="post-title">';
+  if (post.isPinned) html += '<span class="pin-icon">📌</span>';
+  if (post.isLocked) html += '<span class="lock-icon">🔒</span>';
+  if (isHot) html += '<span class="hot-icon">🔥</span>';
+  html += escapeForumHtml(post.title);
+  html += '</div>';
+  if (showExcerpt) {
+    html += '<div class="post-excerpt">' + escapeForumHtml(excerpt) + '</div>';
+  }
+  html += '<div class="post-meta">';
+  html += '<span class="author">' + userLinkHtml(post.authorId, post.authorName) + '</span>';
+  html += '<span class="user-badge' + (post.authorLevel >= 8 ? ' gold' : post.authorLevel >= 5 ? '' : '') + '">Lv.' + post.authorLevel + '</span>';
+  html += '<span>' + catIcon + ' ' + catName + '</span>';
+  html += '<span class="stat">💬 ' + post.replyCount + '</span>';
+  html += '<span class="stat">👍 ' + post.likeCount + '</span>';
+  if (!compact) html += '<span>👁️ ' + post.viewCount + '</span>';
+  html += '<span>' + forumTimeAgo(post.lastReplyAt || post.createdAt) + '</span>';
+  html += '</div></div>';
+  
+  item.innerHTML = html;
+  return item;
+}
+
+function renderOCCard(oc) {
+  var card = document.createElement('a');
+  card.className = 'oc-card';
+  card.href = 'oc-detail.html?id=' + oc.id;
+  var avatarHtml = oc.avatar ? '<img src="' + oc.avatar + '" alt="' + escapeForumHtml(oc.name) + '">' : escapeForumHtml(oc.gameId);
+  card.innerHTML = '<div class="oc-card-top"></div>' +
+    '<div class="oc-card-body">' +
+      '<div class="oc-avatar">' + avatarHtml + '</div>' +
+      '<div class="oc-info">' +
+        '<h3>' + escapeForumHtml(oc.name) + '</h3>' +
+        '<div class="game-id">' + escapeForumHtml(oc.gameId) + '</div>' +
+        '<div class="meta">' +
+          '<span class="tag tag-class">' + escapeForumHtml(oc.class) + '</span>' +
+          '<span class="tag tag-team">' + escapeForumHtml(oc.team) + '</span>' +
+        '</div>' +
+        '<div class="oc-creator">创建者：' + escapeForumHtml(oc.creatorName || '匿名') + '</div>' +
+      '</div>' +
+    '</div>';
+  return card;
+}
+
+function handleApiError(containerId, retryFn) {
+  showErrorState(containerId, '加载失败', retryFn);
+}
+
 function formatPostContent(text) {
   if (!text) return '';
   var html = escapeForumHtml(text);
