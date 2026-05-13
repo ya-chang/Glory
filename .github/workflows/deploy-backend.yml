@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'backend/**'
+      - 's.yaml'
   workflow_dispatch:
 
 jobs:
@@ -18,23 +19,14 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
-        working-directory: backend
-        run: npm install --omit=dev
+      - name: Install Serverless Devs
+        run: npm install -g @serverless-devs/s
 
-      - name: Package
-        working-directory: backend
-        run: zip -r ../glory-api.zip . -x "node_modules/.cache/*"
+      - name: Configure credentials
+        run: |
+          s config add -a default \
+            --AccessKeyID ${{ secrets.ALIYUN_ACCESS_KEY_ID }} \
+            --AccessKeySecret ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
 
-      - name: Deploy to Alibaba Cloud FC
-        uses: appleboy/lambda-function@v0.2.0
-        with:
-          access_key_id: ${{ secrets.ALIYUN_ACCESS_KEY_ID }}
-          access_key_secret: ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
-          region: cn-hangzhou
-          function_name: glory-api
-          zip_file: glory-api.zip
-          runtime: nodejs18
-          handler: index.handler
-          timeout: 30
-          memory_size: 256
+      - name: Deploy
+        run: s deploy -y
