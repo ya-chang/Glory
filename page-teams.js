@@ -1,7 +1,7 @@
 /* ===== teams.html 页面逻辑 ===== */
 (function() {
   var playerIdMap = {};
-  PLAYERS.forEach(function(p) { playerIdMap[p.name] = p.id; });
+  PLAYERS_INDEX.forEach(function(p) { playerIdMap[p.name] = p.id; });
 
   var currentSeason = 9;
 

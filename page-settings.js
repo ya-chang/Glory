@@ -3,7 +3,7 @@
   if (!getToken()) { alert('请先登录'); window.location.href = 'index.html'; return; }
 
   var playerSelect = document.getElementById('s_favPlayer');
-  PLAYERS.forEach(function(p) {
+  PLAYERS_INDEX.forEach(function(p) {
     var opt = document.createElement('option');
     opt.value = p.name;
     opt.textContent = p.name + '（' + p.gameId.split('/')[0].trim() + '）';

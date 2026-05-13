@@ -2,7 +2,7 @@
 (function() {
   // 热门选手（静态数据）
   var hotIds = ['yexiu','huangshaotian','zhouzekai','wangjiexi','hanwenqing','yuwenzhou'];
-  var hotPlayers = PLAYERS.filter(function(p) { return hotIds.indexOf(p.id) !== -1; });
+  var hotPlayers = PLAYERS_INDEX.filter(function(p) { return hotIds.indexOf(p.id) !== -1; });
   var grid = document.getElementById('hotPlayers');
   hotPlayers.forEach(function(p) {
     var card = document.createElement('a');
