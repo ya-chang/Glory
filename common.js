@@ -13,8 +13,9 @@ const API_BASE = 'https://glory-api-feqlkejziv.cn-hangzhou.fcapp.run';
   // 浏览器后退（bfcache恢复）时重置透明度并重新播放进入动画
   window.addEventListener('pageshow', function(e) {
     if (e.persisted) {
-      document.body.style.opacity = '1';
-      document.body.style.transition = 'none';
+      // 清除 beforeunload 设的 inline style，避免覆盖 CSS class
+      document.body.style.opacity = '';
+      document.body.style.transition = '';
       document.body.classList.remove('page-enter', 'page-visible');
       requestAnimationFrame(function() {
         document.body.classList.add('page-enter');
