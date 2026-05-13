@@ -37,54 +37,10 @@
   </div>
 </div>
 
-<!-- 等级与经验 -->
-<div class="profile-level-bar">
-  <div class="container">
-    <div class="level-info">
-      <div class="level-badge" id="levelBadge">Lv.1</div>
-      <div class="level-detail">
-        <div class="level-name" id="levelName">新手玩家</div>
-        <div class="level-progress-wrap">
-          <div class="level-progress-bar">
-            <div class="level-progress-fill" id="levelProgressFill" style="width:0%"></div>
-          </div>
-          <div class="level-exp-text"><span id="currentExp">0</span> / <span id="nextLevelExp">100</span> EXP</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="container">
   <div class="profile-body">
     <!-- 左侧：统计 + 徽章 -->
     <div class="profile-side">
-      <!-- 每日签到 -->
-      <div class="info-card">
-        <h2>📅 每日签到</h2>
-        <div class="checkin-card">
-          <div class="checkin-status" id="checkinStatus"></div>
-          <div class="checkin-stats">
-            <div class="checkin-stat">
-              <div class="checkin-stat-num" id="checkinStreak">0</div>
-              <div class="checkin-stat-label">连续签到</div>
-            </div>
-            <div class="checkin-stat">
-              <div class="checkin-stat-num" id="checkinTotal">0</div>
-              <div class="checkin-stat-label">累计签到</div>
-            </div>
-            <div class="checkin-stat">
-              <div class="checkin-stat-num" id="checkinExpEarned">0</div>
-              <div class="checkin-stat-label">签到获得EXP</div>
-            </div>
-          </div>
-          <button class="btn btn-primary checkin-btn" id="checkinBtn" onclick="doCheckin()">
-            ✅ 签到 +10 EXP
-          </button>
-          <div class="checkin-calendar" id="checkinCalendar"></div>
-        </div>
-      </div>
-
       <!-- 统计卡片 -->
       <div class="info-card">
         <h2>📊 数据统计</h2>
@@ -114,11 +70,7 @@
         <div class="badges-grid" id="badgesGrid"></div>
       </div>
 
-      <!-- 等级说明 -->
-      <div class="info-card">
-        <h2>📈 等级说明</h2>
-        <div class="level-table" id="levelTable"></div>
-      </div>
+
     </div>
 
     <!-- 右侧：内容 -->
@@ -184,40 +136,6 @@
   .profile-join { font-size: 13px; opacity: 0.7; margin-top: 8px; }
   .profile-actions { flex-shrink: 0; }
 
-  .profile-level-bar {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 0;
-  }
-  .level-info {
-    display: flex; align-items: center; gap: 16px;
-    max-width: 1200px; margin: 0 auto; padding: 0 24px;
-  }
-  .level-badge {
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue-3), var(--green-3));
-    color: var(--white);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: 700;
-    flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(26,115,232,0.3);
-  }
-  .level-detail { flex: 1; }
-  .level-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-  .level-progress-wrap { display: flex; align-items: center; gap: 12px; }
-  .level-progress-bar {
-    flex: 1; height: 10px;
-    background: var(--bg); border-radius: 5px; overflow: hidden;
-  }
-  .level-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--blue-3), var(--green-3));
-    border-radius: 5px;
-    transition: width 0.6s ease;
-  }
-  .level-exp-text { font-size: 12px; color: var(--text-3); white-space: nowrap; }
-
   .profile-body {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -250,20 +168,6 @@
   .badge-icon { font-size: 28px; margin-bottom: 6px; }
   .badge-name { font-size: 12px; font-weight: 600; color: var(--text-2); }
 
-  .level-table { font-size: 13px; }
-  .level-row {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid #f5f5f5;
-    color: var(--text-3);
-  }
-  .level-row:last-child { border-bottom: none; }
-  .level-row.reached { color: var(--text); }
-  .level-row-badge { font-weight: 700; width: 40px; color: var(--blue-3); }
-  .level-row.reached .level-row-badge { color: var(--green-2); }
-  .level-row-name { flex: 1; }
-  .level-row-exp { font-size: 12px; }
-
   .profile-tabs {
     display: flex; gap: 4px;
     border-bottom: 2px solid var(--border);
@@ -284,31 +188,6 @@
   .profile-tab-content { display: none; }
   .profile-tab-content.active { display: block; }
 
-  .checkin-card { text-align: center; }
-  .checkin-status { margin-bottom: 12px; }
-  .checkin-done { font-size: 13px; color: var(--green-2); font-weight: 600; }
-  .checkin-pending { font-size: 13px; color: var(--text-3); }
-  .checkin-stats { display: flex; gap: 8px; margin-bottom: 16px; }
-  .checkin-stat { flex: 1; padding: 10px 4px; background: var(--bg); border-radius: 8px; }
-  .checkin-stat-num { font-size: 20px; font-weight: 700; color: var(--blue-3); line-height: 1.2; }
-  .checkin-stat-label { font-size: 11px; color: var(--text-3); margin-top: 2px; }
-  .checkin-btn {
-    width: 100%; padding: 12px; font-size: 15px; font-weight: 600;
-    border-radius: 10px; margin-bottom: 16px;
-  }
-  .checkin-btn.checked { background: var(--green-5); color: var(--green-2); border-color: var(--green-4); cursor: default; opacity: 0.8; }
-  .cal-row { display: flex; gap: 6px; justify-content: center; }
-  .cal-day {
-    flex: 1; max-width: 48px; padding: 8px 0;
-    border-radius: 8px; background: var(--bg); text-align: center;
-  }
-  .cal-day.done { background: var(--green-5); border: 1px solid var(--green-4); }
-  .cal-day.today { border: 2px solid var(--blue-3); }
-  .cal-day-label { font-size: 11px; color: var(--text-3); margin-bottom: 4px; }
-  .cal-day-dot { font-size: 13px; font-weight: 700; color: var(--text-3); }
-  .cal-day.done .cal-day-dot { color: var(--green-2); }
-  .cal-day.today .cal-day-dot { color: var(--blue-3); }
-
   .toast-msg {
     position: fixed; bottom: 80px; left: 50%;
     transform: translateX(-50%) translateY(20px);
@@ -328,8 +207,7 @@
     .profile-body { grid-template-columns: 1fr; gap: 16px; }
     .profile-side { order: 2; }
     .profile-main { order: 1; }
-    .profile-level-bar { padding: 12px 0; }
-    .level-info { padding: 0 16px; }
+
     .stat-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .stat-item { padding: 10px 4px; }
     .stat-num { font-size: 18px; }
