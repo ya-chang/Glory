@@ -66,7 +66,7 @@ const TEAM_ROSTERS = {
       7: [{name:"韩文清",role:"拳法家",note:"队长"},{name:"张新杰",role:"牧师",note:"副队长"},{name:"林敬言",role:"流氓"},{name:"白言飞",role:"元素法师"},{name:"周光义",role:"刺客"},{name:"王池轩",role:"神枪手"}],
       8: [{name:"韩文清",role:"拳法家",note:"队长"},{name:"张新杰",role:"牧师",note:"副队长"},{name:"白言飞",role:"元素法师"},{name:"周光义",role:"刺客"},{name:"王池轩",role:"神枪手"}],
       9: [{name:"韩文清",role:"拳法家",note:"队长"},{name:"张新杰",role:"牧师",note:"副队长"},{name:"张佳乐",role:"弹药专家",note:"复出加入"},{name:"林敬言",role:"流氓",note:"从呼啸转入"},{name:"白言飞",role:"元素法师"},{name:"秦牧云",role:"神枪手",note:"出道"}],
-      10: [{name:"韩文清",role:"拳法家",note:"队长"},{name:"张新杰",role:"牧师",note:"副队长"},{name:"张佳乐",role:"弹药专家"},{name:"白言飞",role:"元素法师"},{name:"秦牧云",role:"神枪手"},{name:"宋奇英",role:"拳法家",note:"出道"}]
+      10: [{name:"韩文清",role:"拳法家",note:"队长"},{name:"张新杰",role:"牧师",note:"副队长"},{name:"张佳乐",role:"弹药专家"},{name:"林敬言",role:"流氓",note:"S9从呼啸转入"},{name:"白言飞",role:"元素法师"},{name:"秦牧云",role:"神枪手"},{name:"宋奇英",role:"拳法家",note:"出道"}]
     }
   },
   "轮回": {
