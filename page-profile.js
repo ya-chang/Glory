@@ -37,7 +37,7 @@
     return streak;
   }
 
-  window.doCheckin = function() {
+  window.doCheckin = async function() {
     if (isTodayCheckedIn()) return;
     var data = getCheckinData();
     var today = getToday();
@@ -45,6 +45,25 @@
     data.lastDate = today;
     data.streak = calcStreak(data.dates);
     localStorage.setItem(CHECKIN_KEY, JSON.stringify(data));
+
+    // 同步更新经验值到服务器
+    try {
+      var result = await apiPut('/api/profile', { expAdd: 10 });
+      if (result && result.exp !== undefined) {
+        // 更新等级和经验条显示
+        var newExp = result.exp;
+        var levelInfo = calcLevel(newExp);
+        document.getElementById('currentExp').textContent = newExp;
+        document.getElementById('nextLevelExp').textContent = levelInfo.next.exp;
+        document.getElementById('levelBadge').textContent = 'Lv.' + levelInfo.current.level;
+        document.getElementById('levelName').textContent = levelInfo.current.name;
+        document.getElementById('levelProgressFill').style.width = levelInfo.progress + '%';
+        document.getElementById('profileTitle').textContent = levelInfo.current.name;
+      }
+    } catch (e) {
+      console.error('更新经验值失败:', e);
+    }
+
     renderCheckin();
     showToast('签到成功！+10 EXP 🎉');
   };
@@ -197,6 +216,15 @@
       var user = getUser();
       if (!user) return;
       var result = await getPostsByAuthor(user.email);
+      if (!result || !result.items) {
+        document.getElementById('myPosts').innerHTML = '<p style="color:var(--text-3);padding:20px 0;text-align:center;">加载中...</p>';
+        // 重试一次
+        result = await getPostsByAuthor(user.email);
+        if (!result || !result.items) {
+          document.getElementById('myPosts').innerHTML = '<p style="color:var(--text-3);padding:20px 0;text-align:center;">加载失败，请刷新重试</p>';
+          return;
+        }
+      }
       // 客户端二次过滤，确保只显示当前用户的帖子
       var myPosts = (result.items || []).filter(function(p) {
         return p.authorId && user.email && p.authorId.toLowerCase() === user.email.toLowerCase();
